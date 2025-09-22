@@ -47,4 +47,3 @@ class AttendanceManager:
             if user.grade.name == "NORMAL":
                 if NormalGrade().is_candidate_for_removal(user):
                     print(name)
-

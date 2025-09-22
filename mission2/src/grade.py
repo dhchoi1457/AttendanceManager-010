@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 from mission2.src.user import User
 
 
@@ -50,7 +49,6 @@ class GradeFactory:
     @staticmethod
     def create(points: int) -> Grade:
         total = points
-
         if total >= GoldGrade().threshold:
             return GoldGrade()
         elif total >= SilverGrade().threshold:

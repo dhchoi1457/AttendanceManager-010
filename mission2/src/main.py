@@ -1,9 +1,8 @@
-from collections import defaultdict
 from mission2.src.manager import AttendanceManager
+
 
 def process_attendance_file(filename="../data/attendance_weekday_500.txt"):
     try:
-
         manager = AttendanceManager()
 
         with open(filename, encoding='utf-8') as f:
