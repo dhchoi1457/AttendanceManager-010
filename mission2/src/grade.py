@@ -1,9 +1,6 @@
 from abc import ABC, abstractmethod
 from mission2.src.user import User
 
-BONUS_POINTS = 10
-BONUS_ATTEND_COUNT_THRESHOLD = 10
-
 class Grade(ABC):
     @abstractmethod
     def name(self) -> str:
@@ -52,14 +49,8 @@ class NormalGrade(Grade):
 
 class GradeFactory:
     @staticmethod
-    def create(points: int, wed_count: int, weekend_count: int) -> Grade:
-        bonus = 0
-        if wed_count >= BONUS_ATTEND_COUNT_THRESHOLD:
-            bonus += BONUS_POINTS
-        if weekend_count >= BONUS_ATTEND_COUNT_THRESHOLD:
-            bonus += BONUS_POINTS
-
-        total = points + bonus
+    def create(points: int) -> Grade:
+        total = points
 
         if total >= GoldGrade().threshold:
             return GoldGrade()
