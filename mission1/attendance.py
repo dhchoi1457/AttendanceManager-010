@@ -52,6 +52,35 @@ def input2(w, wk):
     points[id2] += add_point
 
 
+def print_removed_results():
+    print("\nRemoved player")
+    print("==============")
+    for i in range(1, id_cnt + 1):
+        if grade[i] not in (1, 2) and wed[i] == 0 and weeken[i] == 0:
+            print(names[i])
+
+def apply_bonus_and_grade():
+    for i in range(1, id_cnt + 1):
+        if dat[i][2] > 9:
+            points[i] += 10
+        if dat[i][5] + dat[i][6] > 9:
+            points[i] += 10
+
+        if points[i] >= 50:
+            grade[i] = 1
+        elif points[i] >= 30:
+            grade[i] = 2
+        else:
+            grade[i] = 0
+
+        print(f"NAME : {names[i]}, POINT : {points[i]}, GRADE : ", end="")
+        if grade[i] == 1:
+            print("GOLD")
+        elif grade[i] == 2:
+            print("SILVER")
+        else:
+            print("NORMAL")
+
 def process_attendance_file(filename="attendance_weekday_500.txt"):
     try:
         with open(filename, encoding='utf-8') as f:
@@ -60,32 +89,8 @@ def process_attendance_file(filename="attendance_weekday_500.txt"):
                 if len(parts) == 2:
                     input2(parts[0], parts[1])
 
-        for i in range(1, id_cnt + 1):
-            if dat[i][2] > 9:
-                points[i] += 10
-            if dat[i][5] + dat[i][6] > 9:
-                points[i] += 10
-
-            if points[i] >= 50:
-                grade[i] = 1
-            elif points[i] >= 30:
-                grade[i] = 2
-            else:
-                grade[i] = 0
-
-            print(f"NAME : {names[i]}, POINT : {points[i]}, GRADE : ", end="")
-            if grade[i] == 1:
-                print("GOLD")
-            elif grade[i] == 2:
-                print("SILVER")
-            else:
-                print("NORMAL")
-
-        print("\nRemoved player")
-        print("==============")
-        for i in range(1, id_cnt + 1):
-            if grade[i] not in (1, 2) and wed[i] == 0 and weeken[i] == 0:
-                print(names[i])
+        apply_bonus_and_grade()
+        print_removed_results()
 
     except FileNotFoundError:
         print("파일을 찾을 수 없습니다.")
