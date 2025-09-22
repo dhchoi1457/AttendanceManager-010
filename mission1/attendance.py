@@ -1,85 +1,73 @@
-id1 = {}
-id_cnt = 0
+from collections import defaultdict
 
-# dat[사용자ID][요일]
-dat = [[0] * 100 for _ in range(100)]
-points = [0] * 100
-grade = [0] * 100
-names = [''] * 100
-wed = [0] * 100
-weeken = [0] * 100
+DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+DAY_POINTS = {
+    "monday": 1, "tuesday": 1,
+    "wednesday": 3,
+    "thursday": 1, "friday": 1,
+    "saturday": 2, "sunday": 2
+}
+BONUS_THRESHOLD = 10
+BONUS_POINTS = 10
+GRADE_THRESHOLDS = {"GOLD": 50, "SILVER": 30}
+
+user_ids = {}
+user_count = 0
+names = {}
+attendance = defaultdict(lambda: defaultdict(int))
+points = defaultdict(int)
+grades = {}
+wednesday_count = defaultdict(int)
+weekend_count = defaultdict(int)
 
 
-def input2(w, wk):
-    global id_cnt
+def register_user(name):
+    global user_count
+    if name not in user_ids:
+        user_count += 1
+        user_ids[name] = user_count
+        names[user_count] = name
+    return user_ids[name]
 
-    if w not in id1:
-        id_cnt += 1
-        id1[w] = id_cnt
-        names[id_cnt] = w
 
-    id2 = id1[w]
-
-    add_point = 0
-    index = 0
-
-    if wk == "monday":
-        index = 0
-        add_point += 1
-    elif wk == "tuesday":
-        index = 1
-        add_point += 1
-    elif wk == "wednesday":
-        index = 2
-        add_point += 3
-        wed[id2] += 1
-    elif wk == "thursday":
-        index = 3
-        add_point += 1
-    elif wk == "friday":
-        index = 4
-        add_point += 1
-    elif wk == "saturday":
-        index = 5
-        add_point += 2
-        weeken[id2] += 1
-    elif wk == "sunday":
-        index = 6
-        add_point += 2
-        weeken[id2] += 1
-
-    dat[id2][index] += 1
-    points[id2] += add_point
+def record_attendance(name, day):
+    user_id = register_user(name)
+    attendance[user_id][day] += 1
+    points[user_id] += DAY_POINTS.get(day, 0)
+    if day == "wednesday":
+        wednesday_count[user_id] += 1
+    elif day in ("saturday", "sunday"):
+        weekend_count[user_id] += 1
 
 
 def print_removed_results():
-    print("\nRemoved player")
-    print("==============")
-    for i in range(1, id_cnt + 1):
-        if grade[i] not in (1, 2) and wed[i] == 0 and weeken[i] == 0:
-            print(names[i])
+    for user_id in range(1, user_count + 1):
+        name = names[user_id]
+        score = points[user_id]
+        grade = grades[user_id]
+        print(f"NAME : {name}, POINT : {score}, GRADE : {grade}")
+
+    print("\nRemoved player\n==============")
+    for user_id in range(1, user_count + 1):
+        if grades[user_id] == "NORMAL" and wednesday_count[user_id] == 0 and weekend_count[user_id] == 0:
+            print(names[user_id])
+
 
 def apply_bonus_and_grade():
-    for i in range(1, id_cnt + 1):
-        if dat[i][2] > 9:
-            points[i] += 10
-        if dat[i][5] + dat[i][6] > 9:
-            points[i] += 10
+    for user_id in range(1, user_count + 1):
+        if wednesday_count[user_id] >= BONUS_THRESHOLD:
+            points[user_id] += BONUS_POINTS
+        if weekend_count[user_id] >= BONUS_THRESHOLD:
+            points[user_id] += BONUS_POINTS
 
-        if points[i] >= 50:
-            grade[i] = 1
-        elif points[i] >= 30:
-            grade[i] = 2
+        score = points[user_id]
+        if score >= GRADE_THRESHOLDS["GOLD"]:
+            grades[user_id] = "GOLD"
+        elif score >= GRADE_THRESHOLDS["SILVER"]:
+            grades[user_id] = "SILVER"
         else:
-            grade[i] = 0
+            grades[user_id] = "NORMAL"
 
-        print(f"NAME : {names[i]}, POINT : {points[i]}, GRADE : ", end="")
-        if grade[i] == 1:
-            print("GOLD")
-        elif grade[i] == 2:
-            print("SILVER")
-        else:
-            print("NORMAL")
 
 def process_attendance_file(filename="attendance_weekday_500.txt"):
     try:
@@ -87,7 +75,7 @@ def process_attendance_file(filename="attendance_weekday_500.txt"):
             for line in f:
                 parts = line.strip().split()
                 if len(parts) == 2:
-                    input2(parts[0], parts[1])
+                    record_attendance(parts[0], parts[1])
 
         apply_bonus_and_grade()
         print_removed_results()
