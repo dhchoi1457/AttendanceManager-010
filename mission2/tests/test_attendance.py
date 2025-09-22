@@ -1,5 +1,4 @@
-import pytest
-from mission2.attendance import User
+from mission2.src.user import User
 
 def test_user_attendance_and_points():
     # Arrange
@@ -29,3 +28,13 @@ def test_user_weekend_count():
     # Assert
     assert user.count_weekend() == 5
 
+def test_user_wednesday_count():
+    # Arrange
+    user = User(3, "kimdh")
+
+    # Act
+    for _ in range(5):
+        user.record_attendance("wednesday")
+
+    # Assert
+    assert user.count_wednesday() == 5
