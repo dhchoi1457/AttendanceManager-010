@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
+
 from mission2.src.user import User
+
 
 class Grade(ABC):
     @abstractmethod
-    def name(self) -> str:
+    def name(self) -> str:  # pragma: no cover
         pass
 
     @abstractmethod
-    def threshold(self) -> int:
+    def threshold(self) -> int:  # pragma: no cover
         pass
-
-    def is_candidate_for_removal(self, user:User) -> bool:
-        return False
 
 
 class GoldGrade(Grade):
@@ -43,7 +42,7 @@ class NormalGrade(Grade):
     def threshold(self):
         return 0
 
-    def is_candidate_for_removal(self, user:User):
+    def is_candidate_for_removal(self, user: User):
         return user.count_wednesday() == 0 and user.count_weekend() == 0
 
 
@@ -58,4 +57,3 @@ class GradeFactory:
             return SilverGrade()
         else:
             return NormalGrade()
-
