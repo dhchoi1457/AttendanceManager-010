@@ -9,6 +9,7 @@ names = [''] * 100
 wed = [0] * 100
 weeken = [0] * 100
 
+
 def input2(w, wk):
     global id_cnt
 
@@ -50,13 +51,11 @@ def input2(w, wk):
     dat[id2][index] += 1
     points[id2] += add_point
 
-def input_file():
+
+def process_attendance_file(filename="attendance_weekday_500.txt"):
     try:
-        with open("attendance_weekday_500.txt", encoding='utf-8') as f:
-            for _ in range(500):
-                line = f.readline()
-                if not line:
-                    break
+        with open(filename, encoding='utf-8') as f:
+            for line in f:
                 parts = line.strip().split()
                 if len(parts) == 2:
                     input2(parts[0], parts[1])
@@ -91,5 +90,6 @@ def input_file():
     except FileNotFoundError:
         print("파일을 찾을 수 없습니다.")
 
+
 if __name__ == "__main__":
-    input_file()
+    process_attendance_file()
